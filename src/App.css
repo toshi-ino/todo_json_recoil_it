@@ -1,0 +1,98 @@
+/* Header */
+
+nav {
+  width: 700px;
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  margin: 20px 8px;
+  background-color: rgb(246, 226, 188);
+}
+
+/* Body */
+main {
+  width: 75vw;
+}
+
+h3 {
+  font-weight: bold;
+  color: rgb(60, 60, 60);
+  text-align: center;
+}
+
+button {
+  border-radius: 8px;
+  border: none;
+  padding: 4px 4px;
+  background-color: white;
+  margin: 4px 4px;
+}
+
+li div p {
+  margin: 4px 6px;
+}
+
+button:hover {
+  background-color: rgb(220, 220, 220);
+  color: rgb(45, 45, 46);
+  cursor: pointer;
+}
+
+input {
+  border-radius: 4px;
+  padding: 4px 16px;
+  margin: 0 16px;
+  /* border: none; */
+}
+
+.inputArea {
+  width: 700px;
+  height: 30px;
+  margin: 15px;
+  padding: 8px;
+  margin: 8px;
+  background-color: beige;
+}
+
+.incompleteArea {
+  width: 700px;
+  min-height: 200px;
+  padding: 8px;
+  margin: 8px;
+  background-color: rgb(235, 235, 235);
+}
+
+.completeArea {
+  width: 700px;
+  min-height: 200px;
+  padding: 8px;
+  margin: 8px;
+  background-color: rgb(164, 167, 169);
+}
+
+.todoTitle {
+  font-weight: bold;
+  color: #666;
+}
+
+.todoItem {
+  display: flex;
+  align-items: center;
+  height: 35px;
+}
+
+.todoHeader {
+  display: flex;
+  margin-left: 20px;
+}
+
+.todoHeader p {
+  margin-left: 24px;
+}
+
+/* Modal用のCSS */
+#modify {
+  width: 50%;
+  padding: 1em;
+  background: #fff;
+}
