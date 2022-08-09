@@ -16,6 +16,12 @@ const IncompleteList = (props) => {
         onClickModify
     } = props;
 
+    /**
+     * RecoilにデータをsetするだけならuseSetRecoilStateで定義するとよいです。
+     * グローバル変数はいろんなファイルで更新できてしまうため、
+     * データを入れる場所、データを読み出すだけの場所をはっきりさせるとバグが減る実装ができますね（井上）
+     */
+
 const [recoilModTitle, setRecoilModTitle] = useRecoilState(recoilModifiedTitle)
 const [recoilModDetail, setRecoilModDetail] = useRecoilState(recoilModifiedDetail)
 const [recoilModDue, setRecoilModDue] = useRecoilState(recoilModifiedDue)
