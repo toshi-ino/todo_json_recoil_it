@@ -24,6 +24,14 @@ const ModifyModal = (props) => {
     } = props;
 
     // Recoilを使っての変数を定義
+    /**
+     * inputに入力されたデータを直接Recoilにセットした場合、意図どおり動作しないかもしれません。
+     * Recoilのset関数はデータをセットしたときにレンダリングしません。
+     * そのため、現在の実装のようにinputにキーボード入力された情報をRecoilにセットすると
+     * レンダリングされず、input入力が変更しないことがあると思います（すみません、動かせなかったので動作は見れていません）
+     * この場合だと、inputのデータはuseSateに持たせて、どこかのタイミングでRecoilにセットした方が良いと思います（井上）
+     */
+
     const [recoilModTitle, setRecoilModTitle] = useRecoilState(recoilModifiedTitle)
     const [recoilModDetail, setRecoilModDetail] = useRecoilState(recoilModifiedDetail)
     const [recoilModDue, setRecoilModDue] = useRecoilState(recoilModifiedDue)

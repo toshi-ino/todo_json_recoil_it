@@ -22,6 +22,35 @@ const App = () => {
   // 下のFilter用にfullIncompListを持っておく
   const [fullIncompList, setFullIncompList] = useState(incompleteToDos);
 
+  /**
+   * ReactではuseStateやRecoilの定義は関数処理の上部に置く慣習があります（井上）
+   */
+
+  // Sort functions
+  // true/falseの２択ではなく、3択（昇順、降順、デフォルト）がいる
+  // IDとdue dateの両方でソートができるようにする
+  const [incompSortFlag, setIncompSortFlag] = useState({
+    id: 0,
+    due: 0,
+    completeAt: 0
+  });
+  const [compSortFlag, setCompSortFlag] = useState({
+    id: 0,
+    due: 0,
+    completeAt: 0
+  });
+
+  // modify~系の変数をrecoilを用いてグローバルに変える
+  // modifyできるフィールドにdueとcompleteAtを加える
+  // useRecoildValueでrecoil atomの値を変数に代入
+  const postModifiedTitle = useRecoilValue(recoilModifiedTitle);
+  const postModifiedDetail = useRecoilValue(recoilModifiedDetail);
+  const postModifiedDue = useRecoilValue(recoilModifiedDue);
+
+  const [noActionFilterFlag, setNoActionFilterFlag] = useState(false);
+  const [inActionFilterFlag, setInActionFilterFlag] = useState(false);
+
+
   // axiosを使って、APIのやり取りをするオブジェクトを作成 
   const api = axios.create({
     baseURL: "http://localhost:5000/"
@@ -29,30 +58,61 @@ const App = () => {
 
   // IncompleteToDosのリストをdb.jsonから取り出す
   // 第２引数にincompleteToDosを渡す必要があるのかは要確認。。
+  // useEffect(() => {
+  //   const getIncompToDoList = async () => {
+  //     try {
+  //       const allIncompToDoItems = await api.get('/incompTodos')
+  //       setIncompleteToDos(allIncompToDoItems.data);
+  //       setFullIncompList(allIncompToDoItems.data);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }
+  //   getIncompToDoList();
+  // }, [])
+
+  //   // IncompleteToDosのリストをdb.jsonから取り出す
+  //   // 第２引数にcompleteToDosを渡す必要があるのかは要確認。。
+  // useEffect(() => {
+  //   const getCompToDoList = async () => {
+  //     try {
+  //       const allCompToDoItems = await api.get('/compTodos')
+  //       setCompleteToDos(allCompToDoItems.data);
+  //     } catch (err) {
+  //       console.log(err)
+  //     }
+  //   }
+  //   getCompToDoList();
+  // }, [])
+
+
+   /**
+   * 2つあったuseEffectの実行条件が同じであったため、処理を一つにまとめましたが、こちらでは動作しませんか？（井上）
+   */
   useEffect(() => {
     const getIncompToDoList = async () => {
       try {
         const allIncompToDoItems = await api.get('/incompTodos')
+
         setIncompleteToDos(allIncompToDoItems.data);
         setFullIncompList(allIncompToDoItems.data);
+        //ここでレンダリングが実行されるはず
       } catch (err) {
         console.log(err);
       }
     }
-    getIncompToDoList();
-  }, [])
 
-    // IncompleteToDosのリストをdb.jsonから取り出す
-    // 第２引数にcompleteToDosを渡す必要があるのかは要確認。。
-  useEffect(() => {
     const getCompToDoList = async () => {
       try {
         const allCompToDoItems = await api.get('/compTodos')
         setCompleteToDos(allCompToDoItems.data);
+        //ここでレンダリングが実行されるはず
       } catch (err) {
         console.log(err)
       }
     }
+
+    getIncompToDoList();
     getCompToDoList();
   }, [])
 
@@ -64,6 +124,7 @@ const App = () => {
 
   const onClickAdd = () => {
     if (inputToDoTitle === "") return;
+
     const newListId = () => {
       const totalToDoList = [...incompleteToDos, ...completeToDos];
       if (totalToDoList.length === 0) {
@@ -71,6 +132,10 @@ const App = () => {
       } else {
         const presentIds = totalToDoList.map((todo) => todo.id);
         return Math.max(...presentIds) + 1;
+        /**
+         * totalToDoListの数に1を足しているので、以下の処理でも良い気がします（井上）
+         * return totalToDoList.length + 1;
+         */
       }
     };
 
@@ -83,10 +148,12 @@ const App = () => {
       due: inputToDoDue,
       completeAt: ""
     };
+
     const postNewItemToDB = async () => {
       const postRes = await api.post('/incompTodos', newToDo);
       return postRes.data
     }
+
     postNewItemToDB()
     const newIncompleteList = [...incompleteToDos, newToDo];
     setIncompleteToDos(newIncompleteList);
@@ -129,12 +196,14 @@ const App = () => {
 
     // completeItemの情報を更新し、completeToDosリストに加える
     completeItem.status = "完了済";
+
     const formatDate = (date, format) => {
       format = format.replace(/yyyy/g, date.getFullYear());
       format = format.replace(/MM/g, ("0" + (date.getMonth() + 1)).slice(-2));
       format = format.replace(/dd/g, ("0" + date.getDate()).slice(-2));
       return format;
     };
+
     completeItem.completeAt = formatDate(new Date(), "yyyy-MM-dd");
     await api.post('/compTodos', completeItem)
     const completeList = [...completeToDos, completeItem];
@@ -163,9 +232,9 @@ const App = () => {
   // modify~系の変数をrecoilを用いてグローバルに変える
   // modifyできるフィールドにdueとcompleteAtを加える
   // useRecoildValueでrecoil atomの値を変数に代入
-  const postModifiedTitle = useRecoilValue(recoilModifiedTitle);
-  const postModifiedDetail = useRecoilValue(recoilModifiedDetail);
-  const postModifiedDue = useRecoilValue(recoilModifiedDue);
+  // const postModifiedTitle = useRecoilValue(recoilModifiedTitle);
+  // const postModifiedDetail = useRecoilValue(recoilModifiedDetail);
+  // const postModifiedDue = useRecoilValue(recoilModifiedDue);
 
   const onClickModify = async (index) => {
     const modifyToDoItem = incompleteToDos[index];
@@ -184,16 +253,16 @@ const App = () => {
   // Sort functions
   // true/falseの２択ではなく、3択（昇順、降順、デフォルト）がいる
   // IDとdue dateの両方でソートができるようにする
-  const [incompSortFlag, setIncompSortFlag] = useState({
-    id: 0,
-    due: 0,
-    completeAt: 0
-  });
-  const [compSortFlag, setCompSortFlag] = useState({
-    id: 0,
-    due: 0,
-    completeAt: 0
-  });
+  // const [incompSortFlag, setIncompSortFlag] = useState({
+  //   id: 0,
+  //   due: 0,
+  //   completeAt: 0
+  // });
+  // const [compSortFlag, setCompSortFlag] = useState({
+  //   id: 0,
+  //   due: 0,
+  //   completeAt: 0
+  // });
   const onClickSortFunc = async (fieldName, listArea) => {
     const sectionFlag = listArea === "incompTodos" ? incompSortFlag : compSortFlag;
     const setSectionFlag = listArea === "incompTodos" ? setIncompSortFlag : setCompSortFlag;
@@ -222,8 +291,8 @@ const App = () => {
   };
 
   // Filter機能（余力があれば）タイトルでの検索を追加
-  const [noActionFilterFlag, setNoActionFilterFlag] = useState(false);
-  const [inActionFilterFlag, setInActionFilterFlag] = useState(false);
+  // const [noActionFilterFlag, setNoActionFilterFlag] = useState(false);
+  // const [inActionFilterFlag, setInActionFilterFlag] = useState(false);
   const onClickStatusFilter = (status) => {
     if (noActionFilterFlag === false && status === "未着手") {
       const statusFilterList = fullIncompList.filter(
